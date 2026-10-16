@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JERITAN INTERNATIONAL SCHOOL, EKUREKU</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0B192C',
+                            900: '#1E3E62',
+                        },
+                        gold: {
+                            400: '#F1C40F',
+                            500: '#D4AF37',
+                            600: '#B78A00',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PapaParse for CSV import -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-gold-500 selection:text-white">
+
+    <!-- TOP LOCATION BAR -->
+    <div class="bg-navy-800 text-slate-300 text-xs py-2 px-4 no-print border-b border-slate-700/50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-gold-400"></i> Ekureku, Abi LGA, Cross River State, Nigeria</span>
+                <span class="hidden md:flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-gold-400"></i> +234 (0) 803 000 1122</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="bg-gold-500/20 text-gold-400 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase">Government Approved</span>
+                <span class="text-slate-400">Session: 2025/2026 Academic Year</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Branding -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-12 h-12 bg-navy-900 rounded-xl flex items-center justify-center text-gold-400 shadow-md border-2 border-gold-500">
+                        <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg md:text-xl font-extrabold text-navy-900 tracking-tight uppercase leading-tight">Jeritan Int'l School</h1>
+                        <p class="text-xs font-semibold text-gold-600 tracking-wider">EKUREKU, ABI LGA</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav Tabs -->
+                <nav class="hidden md:flex items-center space-x-1 font-medium text-sm">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg transition text-slate-700 hover:text-navy-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i data-lucide="home" class="w-4 h-4"></i> Home
+                    </button>
+                    <button onclick="switchTab('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-lg transition text-slate-700 hover:text-navy-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i data-lucide="info" class="w-4 h-4"></i> About Us
+                    </button>
+                    <button onclick="switchTab('admissions')" id="nav-admissions" class="nav-btn px-4 py-2 rounded-lg transition text-slate-700 hover:text-navy-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> Admissions
+                    </button>
+                    <button onclick="switchTab('portal')" id="nav-portal" class="nav-btn px-4 py-2 rounded-lg transition text-slate-700 hover:text-navy-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i data-lucide="user-check" class="w-4 h-4"></i> Student Portal
+                    </button>
+                    <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn px-4 py-2 bg-navy-900 text-white hover:bg-navy-800 rounded-lg shadow-sm transition flex items-center gap-2 ml-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-gold-400"></i> Admin Panel
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none">
+                    <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('home')" class="w-full text-left px-3 py-2 rounded-md text-slate-700 font-medium hover:bg-slate-100 flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Home</button>
+            <button onclick="switchTab('about')" class="w-full text-left px-3 py-2 rounded-md text-slate-700 font-medium hover:bg-slate-100 flex items-center gap-2"><i data-lucide="info" class="w-4 h-4"></i> About Us</button>
+            <button onclick="switchTab('admissions')" class="w-full text-left px-3 py-2 rounded-md text-slate-700 font-medium hover:bg-slate-100 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> Admissions</button>
+            <button onclick="switchTab('portal')" class="w-full text-left px-3 py-2 rounded-md text-slate-700 font-medium hover:bg-slate-100 flex items-center gap-2"><i data-lucide="user-check" class="w-4 h-4"></i> Student Portal</button>
+            <button onclick="switchTab('admin')" class="w-full text-left px-3 py-2 rounded-md text-navy-900 font-semibold bg-gold-400/20 hover:bg-gold-400/30 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-navy-900"></i> Admin Dashboard</button>
+        </div>
+    </header>
+
+    <!-- CONTENT SECTIONS CONTAINER -->
+    <main class="flex-grow">
+
+        <!-- ==================== TAB 1: HOME PAGE ==================== -->
+        <section id="tab-home" class="tab-content">
+            <!-- Hero Banner -->
+            <div class="relative bg-navy-900 text-white overflow-hidden py-16 lg:py-24 border-b-4 border-gold-500">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="grid lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                            <span class="inline-flex items-center gap-2 bg-gold-500/20 border border-gold-500/40 text-gold-400 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                                <i data-lucide="award" class="w-4 h-4"></i> Premier Education in Abi LGA
+                            </span>
+                            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+                                Nurturing Academic Excellence & Moral Integrity
+                            </h2>
+                            <p class="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                                Welcome to Jeritan International School, Ekureku. Providing world-class basic and secondary education, modern STEM training, and moral character development in Cross River State.
+                            </p>
+                            <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
+                                <button onclick="switchTab('portal')" class="bg-gold-500 text-navy-900 hover:bg-gold-400 font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center gap-2">
+                                    <i data-lucide="search" class="w-5 h-5"></i> Check Student Results
+                                </button>
+                                <button onclick="switchTab('admissions')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2">
+                                    <i data-lucide="book-open" class="w-5 h-5"></i> Apply for Admission
+                                </button>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-5">
+                            <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 shadow-2xl relative">
+                                <div class="bg-white rounded-xl p-6 text-slate-800">
+                                    <h3 class="text-lg font-bold text-navy-900 mb-4 flex items-center gap-2">
+                                        <i data-lucide="bell" class="w-5 h-5 text-gold-600"></i> School Announcements
+                                    </h3>
+                                    <div id="home-news-feed" class="space-y-4 max-h-64 overflow-y-auto pr-1">
+                                        <!-- Dynamic announcements rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Pillars Section -->
+            <div class="py-16 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center max-w-2xl mx-auto mb-12">
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-navy-900">Why Choose Jeritan International School?</h2>
+                        <p class="text-slate-600 mt-2">Empowering Ekureku youth with knowledge, innovation, and strong moral values.</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center mb-4">
+                                <i data-lucide="book-marked" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-navy-900 mb-2">Standard Curriculum</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">Integrated standard Nigerian curriculum with modern practical subjects including Computer Studies, Agricultural Science, and Civic Education.</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center mb-4">
+                                <i data-lucide="cpu" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-navy-900 mb-2">Digital Literacy</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">Hands-on computer training equipping students with early digital capabilities to excel in a global technology-driven environment.</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center mb-4">
+                                <i data-lucide="shield" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-navy-900 mb-2">Character Building</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">Instilling discipline, community responsibility, and high moral standards across all educational levels in Ekureku, Abi LGA.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: ABOUT US ==================== -->
+        <section id="tab-about" class="tab-content hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                    <span class="text-xs font-bold uppercase tracking-wider text-gold-600 bg-gold-50 px-3 py-1 rounded-full">About Jeritan</span>
+                    <h2 class="text-3xl font-extrabold text-navy-900 mt-3 mb-4">Dedicated to Educational Progress in Cross River State</h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        Jeritan International School was established in Ekureku, Abi Local Government Area, Cross River State, to provide top-tier primary and secondary education. Built on values of integrity, discipline, and modern academic standard, Jeritan caters to students from all communities in Cross River and beyond.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6 mt-8">
+                        <div class="border-l-4 border-navy-900 pl-4 bg-slate-50 p-4 rounded-r-xl">
+                            <h3 class="font-bold text-navy-900 text-lg">Our Mission</h3>
+                            <p class="text-slate-600 text-sm mt-1">To provide holistic, quality education that equips students intellectually, morally, and socially to become global leaders.</p>
+                        </div>
+                        <div class="border-l-4 border-gold-500 pl-4 bg-slate-50 p-4 rounded-r-xl">
+                            <h3 class="font-bold text-navy-900 text-lg">Our Vision</h3>
+                            <p class="text-slate-600 text-sm mt-1">To be the beacon of educational innovation, academic excellence, and character development in Abi LGA and Cross River State.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: ADMISSIONS ==================== -->
+        <section id="tab-admissions" class="tab-content hidden py-12">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                    <h2 class="text-3xl font-extrabold text-navy-900 mb-2">Admissions for 2025/2026 Academic Session</h2>
+                    <p class="text-slate-600 mb-6">Join Jeritan International School, Ekureku. Complete the inquiry form below to initiate admission.</p>
+                    <form onsubmit="handleAdmissionSubmit(event)" class="space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Student's Full Name *</label>
+                                <input type="text" required placeholder="e.g. Ebri Okoi" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Applying Class *</label>
+                                <select class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none">
+                                    <option>JSS 1</option>
+                                    <option>JSS 2</option>
+                                    <option>JSS 3</option>
+                                    <option>SSS 1</option>
+                                    <option>SSS 2</option>
+                                    <option>SSS 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Parent / Guardian Name *</label>
+                                <input type="text" required placeholder="e.g. Chief Okoi" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Phone Number *</label>
+                                <input type="tel" required placeholder="080 1234 5678" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Residential Address in Ekureku / Abi LGA</label>
+                            <input type="text" placeholder="e.g. Itigidi Road, Ekureku" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none">
+                        </div>
+                        <button type="submit" class="w-full bg-navy-900 text-white font-bold py-3 rounded-xl hover:bg-navy-800 transition shadow">
+                            Submit Admission Inquiry
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: STUDENT PORTAL ==================== -->
+        <section id="tab-portal" class="tab-content hidden py-10">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Portal Search Card -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 mb-8 no-print">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-navy-900/10 text-navy-900 rounded-xl">
+                            <i data-lucide="file-search" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-navy-900">Student Result Lookup Portal</h2>
+                            <p class="text-xs text-slate-500">Enter registration number (e.g. JIS/2025/001) or student name</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-grow">
+                            <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-3 text-slate-400"></i>
+                            <input type="text" id="student-search-input" placeholder="Enter Registration Number or Name..." class="w-full pl-11 pr-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none font-medium text-slate-800">
+                        </div>
+                        <button onclick="searchStudentResult()" class="bg-navy-900 hover:bg-navy-800 text-white font-semibold px-6 py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i> View Result
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Display Container -->
+                <div id="result-card-container" class="hidden">
+                    <!-- Report Card Printable Container -->
+                    <div class="bg-white rounded-2xl p-8 border-2 border-slate-300 shadow-md relative">
+                        <!-- Header Banner on Report Card -->
+                        <div class="text-center pb-6 mb-6 border-b-2 border-navy-900">
+                            <div class="inline-flex p-2 bg-navy-900 text-gold-400 rounded-lg mb-2">
+                                <i data-lucide="graduation-cap" class="w-8 h-8"></i>
+                            </div>
+                            <h2 class="text-2xl font-extrabold text-navy-900 uppercase">Jeritan International School, Ekureku</h2>
+                            <p class="text-xs text-slate-600 font-medium">Ekureku, Abi Local Government Area, Cross River State, Nigeria</p>
+                            <p class="text-xs font-bold text-gold-600 uppercase tracking-widest mt-1">Official Student Performance Report Card</p>
+                        </div>
+
+                        <!-- Student Details Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl mb-6 text-sm border border-slate-200">
+                            <div>
+                                <span class="text-xs text-slate-500 block">Student Name:</span>
+                                <span id="card-name" class="font-bold text-slate-900">--</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 block">Registration No:</span>
+                                <span id="card-reg" class="font-bold text-navy-900">--</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 block">Class:</span>
+                                <span id="card-class" class="font-bold text-slate-900">--</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 block">Academic Term:</span>
+                                <span id="card-term" class="font-bold text-slate-900">--</span>
+                            </div>
+                        </div>
+
+                        <!-- Grades Table -->
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-navy-900 text-white uppercase text-xs">
+                                        <th class="p-3 rounded-tl-lg">Subject</th>
+                                        <th class="p-3 text-center">Continuous Assessment (40)</th>
+                                        <th class="p-3 text-center">Examination (60)</th>
+                                        <th class="p-3 text-center">Total Score (100)</th>
+                                        <th class="p-3 text-center rounded-tr-lg">Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="card-subjects-body" class="divide-y divide-slate-200">
+                                    <!-- Dynamic subject scores -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Performance Summary -->
+                        <div class="flex flex-col sm:flex-row justify-between items-center bg-gold-500/10 border border-gold-500/30 p-4 rounded-xl gap-4 mb-6">
+                            <div>
+                                <span class="text-xs text-slate-600 font-semibold block">Total Cumulative Score</span>
+                                <span id="card-total-score" class="text-2xl font-extrabold text-navy-900">0 / 600</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-600 font-semibold block">Average Percentage</span>
+                                <span id="card-average" class="text-2xl font-extrabold text-navy-900">0%</span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-600 font-semibold block">Overall Grade</span>
+                                <span id="card-overall-grade" class="text-xl font-bold bg-navy-900 text-gold-400 px-3 py-1 rounded-lg">A</span>
+                            </div>
+                        </div>
+
+                        <!-- Remarks & Signatures -->
+                        <div class="grid md:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs">
+                            <div>
+                                <p class="font-bold text-slate-700">Principal's Remark:</p>
+                                <p id="card-remark" class="italic text-slate-600 mt-1">An outstanding performance. Keep maintaining this standard of excellence.</p>
+                            </div>
+                            <div class="text-right flex flex-col justify-end items-end">
+                                <div class="w-36 border-b border-slate-400 mb-1"></div>
+                                <p class="font-bold text-navy-900">School Registrar Stamp/Signature</p>
+                            </div>
+                        </div>
+
+                        <!-- Print Action -->
+                        <div class="mt-8 text-center no-print">
+                            <button onclick="window.print()" class="bg-gold-500 text-navy-900 font-bold px-6 py-2.5 rounded-xl hover:bg-gold-400 transition shadow inline-flex items-center gap-2">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Print Official Report Card
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 5: ADMIN DASHBOARD ==================== -->
+        <section id="tab-admin" class="tab-content hidden py-10 bg-slate-100 min-h-screen">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                <!-- Admin Header Bar -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-navy-900 flex items-center gap-2">
+                            <i data-lucide="database" class="w-6 h-6 text-gold-600"></i> Admin Database Management System
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Jeritan International School Data Portal & Live Firestore Persistence Engine</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Database Active
+                        </span>
+                        <button onclick="openAddModal()" class="bg-navy-900 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-navy-800 transition flex items-center gap-1.5 shadow">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Add New Student
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Control Panels Layout -->
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Database Actions & Bulk CSV -->
+                    <div class="space-y-6">
+                        <!-- Bulk CSV Upload Box -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="text-base font-bold text-navy-900 mb-2 flex items-center gap-2">
+                                <i data-lucide="upload-cloud" class="w-5 h-5 text-gold-600"></i> Bulk Upload CSV Result Sheet
+                            </h3>
+                            <p class="text-xs text-slate-500 mb-4">Select or drop a CSV file with student records to update database records instantly.</p>
+                            
+                            <div class="border-2 border-dashed border-slate-300 hover:border-navy-900 rounded-xl p-4 text-center cursor-pointer transition bg-slate-50">
+                                <input type="file" id="csv-file-input" accept=".csv" onchange="handleCSVUpload(event)" class="hidden">
+                                <label for="csv-file-input" class="cursor-pointer space-y-2 block">
+                                    <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-400 mx-auto"></i>
+                                    <span class="text-xs font-semibold text-slate-600 block">Click to upload CSV Grade Sheet</span>
+                                    <span class="text-[10px] text-slate-400 block">Format: regNo, name, class, term, math, english, science, agric, computer, civic</span>
+                                </label>
+                            </div>
+                            <button onclick="downloadCSVTemplate()" class="mt-3 text-xs text-navy-900 font-semibold underline hover:text-gold-600 flex items-center gap-1">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download CSV Template
+                            </button>
+                        </div>
+
+                        <!-- News Announcement Publisher -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="text-base font-bold text-navy-900 mb-2 flex items-center gap-2">
+                                <i data-lucide="megaphone" class="w-5 h-5 text-gold-600"></i> Publish Announcement
+                            </h3>
+                            <form onsubmit="publishNews(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Title</label>
+                                    <input type="text" id="news-title" required placeholder="e.g. Inter-House Sports Notice" class="w-full text-xs p-2.5 border rounded-lg focus:outline-none focus:ring-1 focus:ring-navy-900">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Details</label>
+                                    <textarea id="news-content" required rows="3" placeholder="Enter full announcement..." class="w-full text-xs p-2.5 border rounded-lg focus:outline-none focus:ring-1 focus:ring-navy-900"></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-gold-500 hover:bg-gold-400 text-navy-900 font-bold py-2 rounded-xl text-xs transition shadow">
+                                    Post to Live School Feed
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Live Student Records Data Table -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                            <h3 class="font-bold text-navy-900 text-base">Current Student Database (<span id="record-count">0</span>)</h3>
+                            <div class="w-48">
+                                <input type="text" id="admin-table-search" onkeyup="filterAdminTable()" placeholder="Search records..." class="w-full text-xs px-3 py-1.5 border rounded-lg focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-100 text-slate-700 uppercase">
+                                    <tr>
+                                        <th class="p-3">Reg No</th>
+                                        <th class="p-3">Full Name</th>
+                                        <th class="p-3">Class</th>
+                                        <th class="p-3 text-center">Avg Score</th>
+                                        <th class="p-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-students-tbody" class="divide-y divide-slate-100">
+                                    <!-- Dynamic student records -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-navy-900 text-slate-400 text-xs py-8 border-t border-slate-800 no-print mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-gold-500 text-navy-900 rounded flex items-center justify-center font-bold text-xs">J</div>
+                <span class="text-white font-semibold">JERITAN INTERNATIONAL SCHOOL, EKUREKU</span>
+            </div>
+            <p>Location: Ekureku, Abi Local Government Area, Cross River State, Nigeria.</p>
+            <p>&copy; 2026 Jeritan Int'l School. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ADD / EDIT STUDENT MODAL -->
+    <div id="student-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 id="modal-title" class="text-lg font-bold text-navy-900">Add New Student Record</h3>
+                <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="saveStudentForm(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="edit-original-reg">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="font-semibold block mb-1">Registration No *</label>
+                        <input type="text" id="form-reg" required placeholder="JIS/2025/005" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="font-semibold block mb-1">Full Name *</label>
+                        <input type="text" id="form-name" required placeholder="e.g. Mary Okoi" class="w-full p-2 border rounded-lg">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="font-semibold block mb-1">Class *</label>
+                        <input type="text" id="form-class" required placeholder="JSS 1" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="font-semibold block mb-1">Term *</label>
+                        <input type="text" id="form-term" required placeholder="1st Term" class="w-full p-2 border rounded-lg">
+                    </div>
+                </div>
+
+                <div class="border-t pt-3 font-semibold text-slate-700">Subject Scores (Max Total 100 Each):</div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1">Mathematics</label>
+                        <input type="number" max="100" min="0" id="form-math" required value="75" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block mb-1">English Language</label>
+                        <input type="number" max="100" min="0" id="form-english" required value="80" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Basic Science</label>
+                        <input type="number" max="100" min="0" id="form-science" required value="70" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Agricultural Science</label>
+                        <input type="number" max="100" min="0" id="form-agric" required value="85" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Computer Studies</label>
+                        <input type="number" max="100" min="0" id="form-computer" required value="90" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Civic Education</label>
+                        <input type="number" max="100" min="0" id="form-civic" required value="78" class="w-full p-2 border rounded-lg">
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-2 border-t">
+                    <button type="button" onclick="closeStudentModal()" class="px-4 py-2 rounded-lg border text-slate-600 font-semibold">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-navy-900 text-white font-semibold shadow hover:bg-navy-800">Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- APPLICATION SCRIPT & INITIALIZATION -->
+    <script>
+        // Default Mock DB Initial Dataset
+        let studentDatabase = [
+            {
+                regNo: "JIS/2025/001",
+                name: "Ebri Okoi",
+                class: "JSS 1",
+                term: "1st Term 2025/2026",
+                scores: {
+                    "Mathematics": 88,
+                    "English Language": 82,
+                    "Basic Science": 79,
+                    "Agricultural Science": 91,
+                    "Computer Studies": 95,
+                    "Civic Education": 84
+                }
+            },
+            {
+                regNo: "JIS/2025/002",
+                name: "Grace Bassey",
+                class: "JSS 1",
+                term: "1st Term 2025/2026",
+                scores: {
+                    "Mathematics": 72,
+                    "English Language": 89,
+                    "Basic Science": 80,
+                    "Agricultural Science": 85,
+                    "Computer Studies": 88,
+                    "Civic Education": 90
+                }
+            },
+            {
+                regNo: "JIS/2025/003",
+                name: "David Egwu",
+                class: "SSS 2",
+                term: "1st Term 2025/2026",
+                scores: {
+                    "Mathematics": 94,
+                    "English Language": 76,
+                    "Basic Science": 88,
+                    "Agricultural Science": 82,
+                    "Computer Studies": 92,
+                    "Civic Education": 81
+                }
+            }
+        ];
+
+        let newsDatabase = [
+            { title: "2025/2026 Entrance Examinations", content: "Entrance assessment for new intakes into JSS 1 and SSS 1 holds this Saturday at the main campus hall.", date: "Oct 12, 2025" },
+            { title: "Inter-House Sports Competition", content: "Jeritan annual athletics and sports fiesta is scheduled for next month in Ekureku.", date: "Oct 05, 2025" }
+        ];
+
+        // Initialization
+        window.onload = function() {
+            lucide.createIcons();
+            loadLocalStorageData();
+            renderAdminTable();
+            renderNewsFeed();
+        };
+
+        // Local Storage Persistence Helpers
+        function loadLocalStorageData() {
+            const stored = localStorage.getItem("jeritan_students");
+            if (stored) {
+                try { studentDatabase = JSON.parse(stored); } catch(e){}
+            }
+            const storedNews = localStorage.getItem("jeritan_news");
+            if (storedNews) {
+                try { newsDatabase = JSON.parse(storedNews); } catch(e){}
+            }
+        }
+
+        function saveLocalStorageData() {
+            localStorage.setItem("jeritan_students", JSON.stringify(studentDatabase));
+            localStorage.setItem("jeritan_news", JSON.stringify(newsDatabase));
+        }
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-100', 'text-navy-900', 'font-bold');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) activeNav.classList.add('bg-slate-100', 'text-navy-900', 'font-bold');
+
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Search Student Result Logic
+        function searchStudentResult() {
+            const query = document.getElementById('student-search-input').value.trim().toLowerCase();
+            if(!query) {
+                alert("Please enter a Student Registration Number or Name to search.");
+                return;
+            }
+
+            const student = studentDatabase.find(s => 
+                s.regNo.toLowerCase() === query || 
+                s.name.toLowerCase().includes(query)
+            );
+
+            if (!student) {
+                alert("No record found matching: " + query + ". Please check the registration number or name.");
+                document.getElementById('result-card-container').classList.add('hidden');
+                return;
+            }
+
+            // Populate Report Card
+            document.getElementById('card-name').textContent = student.name;
+            document.getElementById('card-reg').textContent = student.regNo;
+            document.getElementById('card-class').textContent = student.class;
+            document.getElementById('card-term').textContent = student.term;
+
+            const tbody = document.getElementById('card-subjects-body');
+            tbody.innerHTML = '';
+
+            let totalScore = 0;
+            let count = 0;
+
+            for (const [subject, score] of Object.entries(student.scores)) {
+                totalScore += score;
+                count++;
+                
+                // Mock CA and Exam split for presentation
+                const ca = Math.round(score * 0.4);
+                const exam = score - ca;
+                const grade = calculateGrade(score);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800">${subject}</td>
+                    <td class="p-3 text-center text-slate-600">${ca}</td>
+                    <td class="p-3 text-center text-slate-600">${exam}</td>
+                    <td class="p-3 text-center font-bold text-navy-900">${score}</td>
+                    <td class="p-3 text-center font-bold ${gradeColor(grade)}">${grade}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            const avg = Math.round(totalScore / count);
+            document.getElementById('card-total-score').textContent = `${totalScore} / ${count * 100}`;
+            document.getElementById('card-average').textContent = `${avg}%`;
+            document.getElementById('card-overall-grade').textContent = calculateGrade(avg);
+
+            document.getElementById('result-card-container').classList.remove('hidden');
+            document.getElementById('result-card-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateGrade(score) {
+            if (score >= 75) return 'A';
+            if (score >= 65) return 'B';
+            if (score >= 50) return 'C';
+            if (score >= 40) return 'D';
+            return 'F';
+        }
+
+        function gradeColor(grade) {
+            if (grade === 'A') return 'text-emerald-600';
+            if (grade === 'B') return 'text-blue-600';
+            if (grade === 'C') return 'text-amber-600';
+            return 'text-red-600';
+        }
+
+        // Admin Table Rendering
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-students-tbody');
+            tbody.innerHTML = '';
+            document.getElementById('record-count').textContent = studentDatabase.length;
+
+            studentDatabase.forEach(st => {
+                const scoresArr = Object.values(st.scores);
+                const avg = Math.round(scoresArr.reduce((a, b) => a + b, 0) / scoresArr.length);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-navy-900">${st.regNo}</td>
+                    <td class="p-3 font-semibold text-slate-800">${st.name}</td>
+                    <td class="p-3 text-slate-600">${st.class}</td>
+                    <td class="p-3 text-center"><span class="bg-navy-900/10 text-navy-900 px-2 py-0.5 rounded font-bold text-xs">${avg}%</span></td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="editStudent('${st.regNo}')" class="text-blue-600 hover:text-blue-800 font-semibold text-xs inline-flex items-center gap-1"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Edit</button>
+                        <button onclick="deleteStudent('${st.regNo}')" class="text-red-600 hover:text-red-800 font-semibold text-xs inline-flex items-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function filterAdminTable() {
+            const input = document.getElementById('admin-table-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#admin-students-tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        // Student Add / Edit Modal Controls
+        function openAddModal() {
+            document.getElementById('modal-title').textContent = "Add New Student Record";
+            document.getElementById('edit-original-reg').value = "";
+            document.getElementById('form-reg').value = "JIS/2025/00" + (studentDatabase.length + 1);
+            document.getElementById('form-name').value = "";
+            document.getElementById('form-class').value = "JSS 1";
+            document.getElementById('form-term').value = "1st Term 2025/2026";
+            
+            document.getElementById('form-math').value = 75;
+            document.getElementById('form-english').value = 80;
+            document.getElementById('form-science').value = 70;
+            document.getElementById('form-agric').value = 85;
+            document.getElementById('form-computer').value = 90;
+            document.getElementById('form-civic').value = 78;
+
+            document.getElementById('student-modal').classList.remove('hidden');
+        }
+
+        function editStudent(regNo) {
+            const st = studentDatabase.find(s => s.regNo === regNo);
+            if(!st) return;
+
+            document.getElementById('modal-title').textContent = "Edit Student Record";
+            document.getElementById('edit-original-reg').value = st.regNo;
+            document.getElementById('form-reg').value = st.regNo;
+            document.getElementById('form-name').value = st.name;
+            document.getElementById('form-class').value = st.class;
+            document.getElementById('form-term').value = st.term;
+
+            document.getElementById('form-math').value = st.scores["Mathematics"] || 0;
+            document.getElementById('form-english').value = st.scores["English Language"] || 0;
+            document.getElementById('form-science').value = st.scores["Basic Science"] || 0;
+            document.getElementById('form-agric').value = st.scores["Agricultural Science"] || 0;
+            document.getElementById('form-computer').value = st.scores["Computer Studies"] || 0;
+            document.getElementById('form-civic').value = st.scores["Civic Education"] || 0;
+
+            document.getElementById('student-modal').classList.remove('hidden');
+        }
+
+        function closeStudentModal() {
+            document.getElementById('student-modal').classList.add('hidden');
+        }
+
+        function saveStudentForm(e) {
+            e.preventDefault();
+            const origReg = document.getElementById('edit-original-reg').value;
+            const regNo = document.getElementById('form-reg').value.trim();
+            const name = document.getElementById('form-name').value.trim();
+            const cls = document.getElementById('form-class').value.trim();
+            const term = document.getElementById('form-term').value.trim();
+
+            const scores = {
+                "Mathematics": parseInt(document.getElementById('form-math').value) || 0,
+                "English Language": parseInt(document.getElementById('form-english').value) || 0,
+                "Basic Science": parseInt(document.getElementById('form-science').value) || 0,
+                "Agricultural Science": parseInt(document.getElementById('form-agric').value) || 0,
+                "Computer Studies": parseInt(document.getElementById('form-computer').value) || 0,
+                "Civic Education": parseInt(document.getElementById('form-civic').value) || 0
+            };
+
+            const newRecord = { regNo, name, class: cls, term, scores };
+
+            if (origReg) {
+                // Update Existing
+                const idx = studentDatabase.findIndex(s => s.regNo === origReg);
+                if (idx !== -1) studentDatabase[idx] = newRecord;
+            } else {
+                // Check if duplicate Reg No
+                if (studentDatabase.some(s => s.regNo === regNo)) {
+                    alert("A student with Registration Number " + regNo + " already exists!");
+                    return;
+                }
+                studentDatabase.push(newRecord);
+            }
+
+            saveLocalStorageData();
+            renderAdminTable();
+            closeStudentModal();
+        }
+
+        function deleteStudent(regNo) {
+            if (confirm("Are you sure you want to delete record for " + regNo + "?")) {
+                studentDatabase = studentDatabase.filter(s => s.regNo !== regNo);
+                saveLocalStorageData();
+                renderAdminTable();
+            }
+        }
+
+        // CSV Upload Handler
+        function handleCSVUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    let importedCount = 0;
+                    results.data.forEach(row => {
+                        if(row.regNo && row.name) {
+                            const newRec = {
+                                regNo: row.regNo.trim(),
+                                name: row.name.trim(),
+                                class: row.class || "JSS 1",
+                                term: row.term || "1st Term 2025/2026",
+                                scores: {
+                                    "Mathematics": parseInt(row.math) || 0,
+                                    "English Language": parseInt(row.english) || 0,
+                                    "Basic Science": parseInt(row.science) || 0,
+                                    "Agricultural Science": parseInt(row.agric) || 0,
+                                    "Computer Studies": parseInt(row.computer) || 0,
+                                    "Civic Education": parseInt(row.civic) || 0
+                                }
+                            };
+                            
+                            const existingIndex = studentDatabase.findIndex(s => s.regNo === newRec.regNo);
+                            if(existingIndex !== -1) {
+                                studentDatabase[existingIndex] = newRec;
+                            } else {
+                                studentDatabase.push(newRec);
+                            }
+                            importedCount++;
+                        }
+                    });
+
+                    saveLocalStorageData();
+                    renderAdminTable();
+                    alert(`Successfully processed and updated ${importedCount} student record(s) from CSV!`);
+                }
+            });
+        }
+
+        function downloadCSVTemplate() {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "regNo,name,class,term,math,english,science,agric,computer,civic\n" +
+                "JIS/2025/004,Samuel Okoi,JSS 2,1st Term 2025/2026,80,75,82,90,88,85";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Jeritan_Student_Grade_Template.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // News Announcement Management
+        function publishNews(e) {
+            e.preventDefault();
+            const title = document.getElementById('news-title').value.trim();
+            const content = document.getElementById('news-content').value.trim();
+            const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            newsDatabase.unshift({ title, content, date });
+            saveLocalStorageData();
+            renderNewsFeed();
+
+            document.getElementById('news-title').value = '';
+            document.getElementById('news-content').value = '';
+            alert("Announcement successfully published to the public school feed!");
+        }
+
+        function renderNewsFeed() {
+            const feed = document.getElementById('home-news-feed');
+            feed.innerHTML = '';
+            newsDatabase.forEach(news => {
+                const item = document.createElement('div');
+                item.className = "p-3 bg-slate-50 border-l-4 border-gold-500 rounded-r-lg text-xs space-y-1";
+                item.innerHTML = `
+                    <div class="flex justify-between font-bold text-navy-900">
+                        <span>${news.title}</span>
+                        <span class="text-[10px] text-slate-400 font-normal">${news.date}</span>
+                    </div>
+                    <p class="text-slate-600 leading-normal">${news.content}</p>
+                `;
+                feed.appendChild(item);
+            });
+        }
+
+        function handleAdmissionSubmit(e) {
+            e.preventDefault();
+            alert("Thank you! Your admission inquiry for Jeritan International School has been submitted. Our admissions counselor in Ekureku will contact you shortly.");
+            e.target.reset();
+        }
+    </script>
+</body>
+</html>
